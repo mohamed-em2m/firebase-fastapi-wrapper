@@ -20,5 +20,8 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install pre-commit
+      - name: Install dev dependencies (includes pre-commit)
+        run: uv sync --extra dev
+
+      - name: Run pre-commit hooks
         run: uv run pre-commit run --all-files

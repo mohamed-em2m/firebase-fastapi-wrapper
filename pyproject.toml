@@ -1,3 +1,11 @@
-[build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+[project]
+name = "firebase_fastapi_wrapper"
+version = "0.1.0"
+description = "Use FastAPI inside Firebase Functions with full HTTP forwarding"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.110.0",
+    "starlette>=0.36.3",
+    "firebase-functions>=0.2.0",
+]

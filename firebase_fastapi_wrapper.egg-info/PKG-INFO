@@ -1,0 +1,68 @@
+Metadata-Version: 2.4
+Name: firebase_fastapi_wrapper
+Version: 0.1.0
+Summary: Use FastAPI inside Firebase Functions with full HTTP forwarding
+Home-page: https://github.com/yourusername/firebase_fastapi_wrapper
+Author: Your Name
+Author-email: your.email@example.com
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Framework :: FastAPI
+Classifier: Topic :: Internet :: WWW/HTTP
+Classifier: Topic :: Software Development :: Libraries
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: fastapi>=0.110.0
+Requires-Dist: starlette>=0.36.3
+Requires-Dist: firebase-functions>=0.2.0
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# 🔄 firebase_fastapi_wrapper
+
+A lightweight wrapper to run FastAPI apps inside Firebase Functions. Enables HTTP request forwarding from Firebase to FastAPI.
+
+## 🚀 Features
+
+- Seamlessly proxy Firebase HTTPS requests to FastAPI.
+- Handles headers, query strings, and request body.
+- Works with `firebase-functions` Python SDK.
+
+## 🧩 Install
+
+```bash
+pip install firebase_fastapi_wrapper
+```
+### 🔧 Usage
+
+```python
+
+from firebase_functions import https_fn
+from fastapi import FastAPI
+from firebase_fastapi_wrapper.wrapper import FastAPIWrapper
+
+app = FastAPI()
+
+@app.get("/hello")
+def hello():
+    return {"message": "Hello from FastAPI"}
+
+firebase_handler = FastAPIWrapper(app)
+
+@https_fn.on_request()
+def handle_request(req: https_fn.Request):
+    return firebase_handler(req)
+```
+### 📄 requirements.txt
+```txt
+fastapi>=0.110.0
+starlette>=0.36.3
+firebase-functions>=0.2.0
+```

@@ -1,0 +1,27 @@
+name: Publish PyPI
+on:
+  push:
+    branches:
+      - "main"
+jobs:
+    pypi-publish:
+          runs-on: ubuntu-latest
+          environment:
+            name: pypi
+            url:  https://pypi.org/p/firebase-fastapi-wrapper
+          permissions:
+              contents: read
+              id-token: write
+          steps:
+            -  uses: actions/checkout@v4
+            - name: setup python
+              uses: actions/setup-python@v4
+              with:
+                python-version: "3.12"
+            - name: setup uv
+              uses: astral-sh/setup-uv@v5
+            - name: build package
+              run: uv build
+            - name: Publish package to PyPI
+              uses: pypa/gh-action-pypi-publish@release/v1
+              

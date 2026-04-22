@@ -1,4 +1,4 @@
 fastapi==0.110.0
 starlette==0.36.3
 firebase-functions==0.2.0
-uvicorn==0.29.0
+uvicorn==0.45.0

@@ -5,7 +5,7 @@ build/
 dist/
 wheels/
 *.egg-info/
-
+firebase_fastapi_wrapper.egg-info
 # Virtual environments
 .venv/
 venv/

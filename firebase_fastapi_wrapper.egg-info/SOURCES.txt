@@ -1,8 +1,11 @@
 README.md
 pyproject.toml
-setup.py
+firebase_fastapi_wrapper/__init__.py
+firebase_fastapi_wrapper/py.typed
+firebase_fastapi_wrapper/wrapper.py
 firebase_fastapi_wrapper.egg-info/PKG-INFO
 firebase_fastapi_wrapper.egg-info/SOURCES.txt
 firebase_fastapi_wrapper.egg-info/dependency_links.txt
 firebase_fastapi_wrapper.egg-info/requires.txt
 firebase_fastapi_wrapper.egg-info/top_level.txt
+tests/test_wrapper.py

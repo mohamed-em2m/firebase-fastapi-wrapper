@@ -1,13 +1,22 @@
 version: 2
 updates:
-  # Maintain dependencies for GitHub Actions
+  # GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+    labels: ["dependencies", "github-actions"]
 
-  # Maintain pip dependencies
+  # Python (pip / uv)
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
       interval: "weekly"
+    labels: ["dependencies", "python"]
+
+  # uv lockfile
+  - package-ecosystem: "uv"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels: ["dependencies", "uv"]

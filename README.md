@@ -1,41 +1,178 @@
-# 🔄 firebase_fastapi_wrapper
+# 🔥 firebase-fastapi-wrapper
 
-A lightweight wrapper to run FastAPI apps inside Firebase Functions. Enables HTTP request forwarding from Firebase to FastAPI.
+[![PyPI version](https://badge.fury.io/py/firebase-fastapi-wrapper.svg)](https://pypi.org/project/firebase-fastapi-wrapper/)
+[![Python Versions](https://img.shields.io/pypi/pyversions/firebase-fastapi-wrapper)](https://pypi.org/project/firebase-fastapi-wrapper/)
+[![CI](https://github.com/Mohamed-Em2m/FastApi-with-Firebase-functions/actions/workflows/python-app.yml/badge.svg)](https://github.com/Mohamed-Em2m/FastApi-with-Firebase-functions/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## 🚀 Features
+A lightweight, production-ready adapter that lets you run any **FastAPI** (or ASGI) application inside **Firebase Cloud Functions** — with full support for all HTTP methods, CORS, timeouts, and structured error handling.
 
-- Seamlessly proxy Firebase HTTPS requests to FastAPI.
-- Handles headers, query strings, and request body.
-- Works with `firebase-functions` Python SDK.
+---
 
-## 🧩 Install
+## ✨ Features
+
+| Feature | Details |
+|---|---|
+| 🔄 Full HTTP forwarding | `GET`, `POST`, `PUT`, `PATCH`, `DELETE` — all forwarded correctly |
+| 🔒 CORS support | Built-in `cors_origins` allow-list |
+| ⏱️ Timeout protection | Configurable per-request timeout |
+| 🐛 Structured errors | JSON error responses with unique `request_id` for tracing |
+| 🏷️ Typed | Full type annotations + PEP 561 `py.typed` marker |
+| 🐍 Python 3.10 → 3.12 | Tested on all active Python versions |
+| 🌐 Multi-server | Works in Firebase Functions **and** locally with Uvicorn |
+
+---
+
+## 🚀 Installation
 
 ```bash
-pip install firebase_fastapi_wrapper
+# pip
+pip install firebase-fastapi-wrapper
+
+# uv
+uv add firebase-fastapi-wrapper
+
+# Poetry
+poetry add firebase-fastapi-wrapper
 ```
-### 🔧 Usage
+
+---
+
+## 🧩 Quickstart (Firebase Functions)
 
 ```python
-
-from firebase_functions import https_fn
+# functions/main.py
 from fastapi import FastAPI
-from firebase_fastapi_wrapper.wrapper import FastAPIWrapper
+from firebase_functions import https_fn
+from firebase_fastapi_wrapper import FastAPIWrapper
 
 app = FastAPI()
 
 @app.get("/hello")
 def hello():
-    return {"message": "Hello from FastAPI"}
+    return {"message": "Hello from FastAPI inside Firebase!"}
 
+@app.get("/users/{user_id}")
+def get_user(user_id: str):
+    return {"user_id": user_id}
+
+# Wrap once at module level
 firebase_handler = FastAPIWrapper(app)
 
 @https_fn.on_request()
-def handle_request(req: https_fn.Request):
+def handle_request(req: https_fn.Request) -> https_fn.Response:
     return firebase_handler(req)
 ```
-### 📄 requirements.txt
+
+**`requirements.txt`** (Firebase Functions needs this):
+
 ```txt
-fastapi>=0.110.0
-starlette>=0.36.3
-firebase-functions>=0.2.0
+firebase-fastapi-wrapper>=0.2.0
 ```
+
+---
+
+## 🌐 Local Development (Uvicorn / any server)
+
+You don't need Firebase to develop and test your app. Run it directly with Uvicorn — the same `FastAPI` app works on any ASGI server:
+
+```python
+# local_server.py
+import uvicorn
+from main import app   # import your FastAPI app
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
+```
+
+```bash
+pip install uvicorn
+python local_server.py
+# → http://localhost:8000/hello
+# → http://localhost:8000/docs  (Swagger UI)
+```
+
+> **Tip:** Use an environment variable to switch between Firebase and local mode:
+>
+> ```python
+> import os
+> if os.getenv("RUNNING_IN_FIREBASE"):
+>     firebase_handler = FastAPIWrapper(app)
+> else:
+>     import uvicorn
+>     uvicorn.run(app, port=8000)
+> ```
+
+---
+
+## ⚙️ Advanced Configuration
+
+```python
+firebase_handler = FastAPIWrapper(
+    app,
+    # Allow specific origins to make cross-origin requests
+    cors_origins=["https://myapp.web.app", "https://example.com"],
+    # Request timeout in seconds (default: 30)
+    timeout=60,
+    # Hide exception details in production (default: True)
+    error_include_detail=False,
+    # Raise exceptions instead of returning 500 — useful in tests
+    raise_on_error=False,
+)
+```
+
+### CORS with wildcard
+
+```python
+firebase_handler = FastAPIWrapper(app, cors_origins=["*"])
+```
+
+---
+
+## 🚦 Error Handling
+
+All unhandled exceptions are caught and returned as structured JSON:
+
+```json
+{
+  "error": "Internal Server Error",
+  "request_id": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+Set `error_include_detail=True` during development to also see the exception message:
+
+```json
+{
+  "error": "Internal Server Error",
+  "request_id": "550e8400-e29b-41d4-a716-446655440000",
+  "detail": "division by zero"
+}
+```
+
+---
+
+## 🧪 Running Tests
+
+```bash
+# Install dev dependencies
+uv sync --extra dev
+
+# Run the full test suite
+uv run pytest tests/ -v
+
+# With coverage report
+uv run pytest tests/ -v --cov=firebase_fastapi_wrapper --cov-report=term-missing
+```
+
+---
+
+## 🤝 Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for setup instructions, commit conventions, and how to open a PR.
+
+---
+
+## 📄 License
+
+MIT © Mohamed Emam
